@@ -1,4 +1,4 @@
-// Menu, active nav link, project tabs, reveal-on-scroll. No dependencies.
+// Menu, active nav link, project tabs, gallery lightbox, reveal-on-scroll. No dependencies.
 (function () {
   var nav = document.getElementById("main-nav");
   var btn = document.querySelector(".menu-btn");
@@ -35,6 +35,29 @@
       });
     });
   });
+
+  var lb = document.querySelector(".lightbox");
+  var items = document.querySelectorAll(".g-item");
+  if (lb && items.length && lb.showModal) {
+    var img = lb.querySelector("img"), cap = lb.querySelector("figcaption"), cur = 0;
+    function show(i) {
+      cur = (i + items.length) % items.length;
+      var a = items[cur], t = a.querySelector("img");
+      img.src = a.getAttribute("href"); img.alt = t.alt;
+      cap.textContent = a.querySelector(".cap") ? a.querySelector(".cap").textContent : "";
+    }
+    items.forEach(function (a, i) {
+      a.addEventListener("click", function (e) { e.preventDefault(); show(i); lb.showModal(); });
+    });
+    lb.querySelector(".lb-close").addEventListener("click", function () { lb.close(); });
+    lb.querySelector(".lb-prev").addEventListener("click", function () { show(cur - 1); });
+    lb.querySelector(".lb-next").addEventListener("click", function () { show(cur + 1); });
+    lb.addEventListener("click", function (e) { if (e.target === lb || e.target.tagName === "FIGURE") lb.close(); });
+    lb.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") show(cur + 1);
+      if (e.key === "ArrowLeft") show(cur - 1);
+    });
+  }
 
   var els = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
